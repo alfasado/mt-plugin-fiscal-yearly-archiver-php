@@ -8,6 +8,7 @@
 
     ArchiverFactory::add_archiver( 'FiscalYearly', 'FiscalYearlyArchiver' );
     ArchiverFactory::add_archiver( 'Category-FiscalYearly', 'CategoryFiscalYearlyArchiver' );
+    ArchiverFactory::add_archiver( 'Author-FiscalYearly', 'AuthorFiscalYearlyArchiver' );
     class FiscalYearlyArchiver extends YearlyArchiver {
         public function get_label($args = null) {
             global $app;
