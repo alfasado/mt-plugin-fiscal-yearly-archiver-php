@@ -84,9 +84,14 @@
             }
             $archive_list = array();
             $fileinfos = $_fileinfo->Find( $where, FALSE, FALSE, $extra );
+            $years = array();
             foreach ( $fileinfos as $fileinfo ) {
                 $period_start = $fileinfo->startdate;
                 $y = substr($period_start,0,4);
+                if (in_array( $y, $years )) {
+                    continue;
+                }
+                array_push( $years, $y );
                 $m = substr($period_start,4,2);
                 $d = substr($period_start,6,2);
                 $period_end = date("YmdHis", strtotime("$y-$m-$d +1 year -1 sec"));
