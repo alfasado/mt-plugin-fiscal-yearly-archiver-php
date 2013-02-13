@@ -71,6 +71,7 @@
             $mt = MT::get_instance();
             $blog_id = $args['blog_id'];
             $at = $args['archive_type'];
+            $at = $mt->db()->escape($at);
             $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
             require_once( 'class.mt_fileinfo.php' );
             $_fileinfo = new FileInfo;
