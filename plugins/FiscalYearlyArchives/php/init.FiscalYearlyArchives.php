@@ -346,8 +346,11 @@
 
     function start_end_fiscal_year ($ts) {
         $mt = MT::get_instance();
+        $start_month = 4;
         $settings = $mt->db()->fetch_plugin_data('FiscalYearlyArchives','configuration');
-        $start_month = $settings['fiscal_start_month'];
+        if ( $settings ) {
+            $start_month = $settings['fiscal_start_month'];
+        }
         $start_month = sprintf( "%02d",$start_month );
         $y = substr($ts,0,4);
         $m = substr($ts,4,2);
