@@ -2,7 +2,7 @@
 
     // Perl version => http://code.google.com/p/ogawa/wiki/FiscalYearlyArchives
 
-    // version 0.2
+    // version 0.3
 
     require_once( 'MTUtil.php' );
 
@@ -39,12 +39,17 @@
         public function get_range($period_start) {
             $mt = MT::get_instance();
             $ctx =& $mt->context();
-            if (is_array($period_start))
-            $period_start = sprintf("%04d", $period_start['y']);
-            $y = substr($period_start,0,4);
-            $m = substr($period_start,4,2);
-            $d = substr($period_start,6,2);
-            return array($period_start, date("YmdHis", strtotime("$y-$m-$d +1 year -1 sec")));
+            if (is_array($period_start)) {
+                $y = sprintf("%04d", $period_start['y']);
+                $m = sprintf("%02d",$period_start['m']);
+                $d = sprintf("%02d",$period_start['d']);
+                return array("${y}${m}${d}000000", date("YmdHis", strtotime("$y-$m-$d +1 year -1 sec")));
+            } else {
+                $y = substr($period_start,0,4);
+                $m = substr($period_start,4,2);
+                $d = substr($period_start,6,2);
+                return array($period_start, date("YmdHis", strtotime("$y-$m-$d +1 year -1 sec")));
+            }
         }
 
         protected function get_update_link_args($results) {
