@@ -2,7 +2,7 @@
 
     // Perl version => http://code.google.com/p/ogawa/wiki/FiscalYearlyArchives
 
-    // version 0.3
+    // version 0.4
 
     require_once( 'MTUtil.php' );
 
@@ -121,11 +121,12 @@
                 } else {
                     $entry_count = 0;
                 }
-                $archive_list['entry_count'] = $entry_count;
-                $archive_list['y'] = $y;
+                $archive_list_data['entry_count'] = $entry_count;
+                $archive_list_data['y'] = $y;
+                array_push( $archive_list, $archive_list_data );
             }
             if ( $archive_list ) {
-                return array($archive_list);
+                return $archive_list;
             } else {
                 return NULL;
             }
@@ -229,11 +230,12 @@
                 } else {
                     $entry_count = 0;
                 }
-                $archive_list['entry_count'] = $entry_count;
-                $archive_list['y'] = $y;
+                $archive_list_data['entry_count'] = $entry_count;
+                $archive_list_data['y'] = $y;
+                array_push( $archive_list, $archive_list_data );
             }
             if ( $archive_list ) {
-                return array($archive_list);
+                return $archive_list;
             } else {
                 return NULL;
             }
@@ -338,11 +340,12 @@
                 } else {
                     $entry_count = 0;
                 }
-                $archive_list['entry_count'] = $entry_count;
-                $archive_list['y'] = $y;
+                $archive_list_data['entry_count'] = $entry_count;
+                $archive_list_data['y'] = $y;
+                array_push( $archive_list, $archive_list_data );
             }
             if ( $archive_list ) {
-                return array($archive_list);
+                return $archive_list;
             } else {
                 return NULL;
             }
