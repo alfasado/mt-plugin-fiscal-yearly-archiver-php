@@ -2,7 +2,7 @@
 
     // Perl version => http://code.google.com/p/ogawa/wiki/FiscalYearlyArchives
 
-    // version 0.4
+    // version 0.6
 
     require_once( 'MTUtil.php' );
 
@@ -135,7 +135,21 @@
         protected function get_helper() {
             return 'start_end_fiscal_year';
         }
-    }
+
+        public function get_archive_link_sql($ts, $at, $args) {
+            $mt = MT::get_instance();
+            $ctx =& $mt->context();
+            $blog_id = intval($args['blog_id']);
+            $at or $at = $ctx->stash('current_archive_type');
+            $ts = $ctx->stash('current_timestamp');
+            list($start, $end) = start_end_fiscal_year($ts);
+            $sql = ($ts ? "fileinfo_startdate = '$start' and" : "") .
+                   " fileinfo_blog_id = $blog_id
+                     and fileinfo_archive_type = '".$mt->db()->escape($at)."'
+                     and templatemap_is_preferred = 1";
+            return $sql;
+        }
+   }
 
     class CategoryFiscalYearlyArchiver extends FiscalYearlyArchiver {
         public function get_label($args = null) {
@@ -212,7 +226,7 @@
                 $m = substr($period_start,4,2);
                 $d = substr($period_start,6,2);
                 $period_end = date("YmdHis", strtotime("$y-$m-$d +1 year -1 sec"));
-                $sql = "select count(*) as entry_count,
+                $sql = "select 
                           placement_category_id,
                           category_label
                           from mt_entry join mt_placement on entry_id = placement_entry_id
@@ -225,8 +239,7 @@
                            $cat_filter";
                 $result = $mt->db()->SelectLimit($sql);
                 if ($result) {
-                    $fields = $result->fields;
-                    $entry_count = $fields['entry_count'];
+                    $entry_count = $result->_numOfRows;
                 } else {
                     $entry_count = 0;
                 }
@@ -239,6 +252,23 @@
             } else {
                 return NULL;
             }
+        }
+
+        public function get_archive_link_sql($ts, $at, $args) {
+            $mt = MT::get_instance();
+            $ctx =& $mt->context();
+            $blog_id = intval($args['blog_id']);
+            $at or $at = $ctx->stash('current_archive_type');
+            $ts = $ctx->stash('current_timestamp');
+            list($start, $end) = start_end_fiscal_year($ts);
+            $cat = $ctx->stash('category');
+            $cat_id = $cat->category_id;
+            $sql = ($ts ? "fileinfo_startdate = '$start' and" : "") .
+                   " fileinfo_blog_id = $blog_id
+                     and fileinfo_archive_type = '".$mt->db()->escape($at)."'
+                     and fileinfo_category_id = '$cat_id'
+                     and templatemap_is_preferred = 1";
+            return $sql;
         }
     }
 
@@ -293,6 +323,7 @@
 
         protected function get_archive_list_data($args) {
             $mt = MT::get_instance();
+            $ctx =& $mt->context();
             $blog_id = $args['blog_id'];
             $at = $args['archive_type'];
             $at = $mt->db()->escape($at);
@@ -350,6 +381,24 @@
                 return NULL;
             }
         }
+
+        public function get_archive_link_sql($ts, $at, $args) {
+            $mt = MT::get_instance();
+            $ctx =& $mt->context();
+            $blog_id = intval($args['blog_id']);
+            $at or $at = $ctx->stash('current_archive_type');
+            $ts = $ctx->stash('current_timestamp');
+            list($start, $end) = start_end_fiscal_year($ts);
+            $author = $ctx->stash('author');
+            $auth_id = $author->author_id;
+            $sql = ($ts ? "fileinfo_startdate = '$start' and" : "") .
+                   " fileinfo_blog_id = $blog_id
+                     and fileinfo_archive_type = '".$mt->db()->escape($at)."'
+                     and fileinfo_author_id = '$auth_id'
+                     and templatemap_is_preferred = 1";
+            return $sql;
+        }
+
     }
 
     function start_end_fiscal_year ($ts) {
@@ -361,10 +410,6 @@
         }
         $start_month = sprintf( "%02d",$start_month );
         $y = substr($ts,0,4);
-        $m = substr($ts,4,2);
-        if ( $m < $start_month ) {
-            $y--;
-        }
         $period_start = $y . $start_month . '01000000';
         $period_end = date("YmdHis", strtotime("$y-$start_month-01 +1 year -1 sec"));
         return array($period_start,$period_end);
